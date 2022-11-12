@@ -5,7 +5,7 @@ VERSION := $(shell git log -1 --pretty=%h .)
 
 .PHONY: build
 build:
-	GOOS=linux GOARCH=amd64 go build -ldflags="-X main.version=$(VERSION)" -o build/$(PROJECT)-linux-amd64 .
+	GOARCH=amd64 GOOS=linux go build -ldflags="-X main.version=$(VERSION)" -o build/$(PROJECT)-linux-amd64 ./cmd
 	zip -j build/$(VERSION).zip build/$(PROJECT)-linux-amd64
 
 .PHONY: download

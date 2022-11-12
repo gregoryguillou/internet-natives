@@ -1,21 +1,16 @@
-resource "aws_dynamodb_table" "wallets" {
-  name         = "inc${terraform.workspace}wallets"
-  hash_key     = "address"
+resource "aws_dynamodb_table" "capture" {
+  name         = "inc${terraform.workspace}capture"
+  hash_key     = "network"
   billing_mode = "PAY_PER_REQUEST"
 
   attribute {
-    name = "address"
+    name = "network"
     type = "S"
-  }
-
-  ttl {
-    attribute_name = "TTL"
-    enabled        = true
   }
 }
 
-resource "aws_dynamodb_table" "request" {
-  name         = "inc${terraform.workspace}signers"
+resource "aws_dynamodb_table" "safe" {
+  name         = "inc${terraform.workspace}safe"
   hash_key     = "address"
   billing_mode = "PAY_PER_REQUEST"
 
@@ -23,18 +18,24 @@ resource "aws_dynamodb_table" "request" {
     name = "address"
     type = "S"
   }
+}
 
-  ttl {
-    attribute_name = "TTL"
-    enabled        = true
+resource "aws_dynamodb_table" "signer" {
+  name         = "inc${terraform.workspace}signer"
+  hash_key     = "address"
+  billing_mode = "PAY_PER_REQUEST"
+
+  attribute {
+    name = "address"
+    type = "S"
   }
 
 }
 
 data "aws_iam_policy_document" "authorization" {
-  policy_id = "${terraform.workspace}QasarAuthorizationPolicy"
+  policy_id = "inc${terraform.workspace}dynamo"
   statement {
-    sid    = "QasarAuthorizationTable"
+    sid    = "incdynamo"
     effect = "Allow"
     actions = [
       "dynamodb:PutItem",
@@ -42,15 +43,16 @@ data "aws_iam_policy_document" "authorization" {
       "dynamodb:GetItem",
     ]
     resources = [
-      aws_dynamodb_table.authorization.arn,
-      aws_dynamodb_table.request.arn,
+      aws_dynamodb_table.capture.arn,
+      aws_dynamodb_table.safe.arn,
+      aws_dynamodb_table.signer.arn,
     ]
   }
 }
 
 resource "aws_iam_policy" "dynamodb_policy" {
-  name        = "${terraform.workspace}QasarSessionPolicy"
-  description = "The policy to access the starknet Qasar Session Token"
+  name        = "inc${terraform.workspace}dynamopolicy"
+  description = "The policy to access the INC tables"
   policy      = data.aws_iam_policy_document.authorization.json
 }
 

@@ -8,6 +8,11 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
+type Capture struct {
+	BlockNumber uint64 `dynamodbav:"blockNumber" json:"blockNumber"`
+	Network     string `dynamodbav:"network" json:"network"`
+}
+
 type CapturedBlock struct {
 	BlockNumber  uint64
 	BlockHash    common.Hash
@@ -26,6 +31,10 @@ type CapturedTransaction struct {
 
 func (c *Client) Current(ctx context.Context) (uint64, error) {
 	return c.BlockNumber(ctx)
+}
+
+func (c *Client) BlockNumber(ctx context.Context) (uint64, error) {
+	return c.Client.BlockNumber(ctx)
 }
 
 func (c *Client) CaptureBlock(ctx context.Context, blockNumber uint64) (*CapturedBlock, error) {

@@ -6,27 +6,7 @@ variable "certificate" {
   type = string
 }
 
-variable "keyring" {
+variable "developer" {
   type    = string
-  default = "https://starknet-burner.vercel.app"
+  default = "http://localhost:5173"
 }
-
-variable "keyringv2" {
-  type    = string
-  default = "https://keyring.qasar.xyz"
-}
-
-variable "keyring_test" {
-  type    = string
-  default = "http://localhost:3000"
-}
-
-variable "qasar" {
-  type = string
-}
-
-variable "qasar_test" {
-  type    = string
-  default = "http://localhost:3001"
-}
-

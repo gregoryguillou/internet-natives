@@ -5,7 +5,7 @@ resource "aws_apigatewayv2_api" "api" {
 
   cors_configuration {
     allow_credentials = true
-    allow_origins     = []
+    allow_origins     = [var.developer]
     allow_methods     = ["GET", "PUT", "POST", "DELETE"]
     allow_headers     = ["Authorization", "Content-Type", "X-Amz-Date", "X-Amz-Security-Token", "Accept", "Referer", "User-Agent", "sec-ch-ua", "sec-ch-ua-mobile", "sec-ch-ua-platform"]
   }
@@ -19,7 +19,7 @@ resource "aws_lambda_permission" "apigw" {
 }
 
 resource "aws_apigatewayv2_domain_name" "api" {
-  domain_name = "api.qasar.xyz"
+  domain_name = "safe.carnage.sh"
 
   domain_name_configuration {
     certificate_arn = var.certificate
@@ -28,17 +28,23 @@ resource "aws_apigatewayv2_domain_name" "api" {
   }
 }
 
-# resource "aws_route53_record" "api" {
-#   name    = aws_apigatewayv2_domain_name.api.domain_name
-#   type    = "A"
-#   zone_id = data.aws_route53_zone.domain.zone_id
+data "aws_route53_zone" "domain" {
+  name         = "carnage.sh."
+  private_zone = false
 
-#   alias {
-#     name                   = aws_apigatewayv2_domain_name.api.domain_name_configuration[0].target_domain_name
-#     zone_id                = aws_apigatewayv2_domain_name.api.domain_name_configuration[0].hosted_zone_id
-#     evaluate_target_health = false
-#   }
-# }
+}
+
+resource "aws_route53_record" "api" {
+  name    = aws_apigatewayv2_domain_name.api.domain_name
+  type    = "A"
+  zone_id = data.aws_route53_zone.domain.zone_id
+
+  alias {
+    name                   = aws_apigatewayv2_domain_name.api.domain_name_configuration[0].target_domain_name
+    zone_id                = aws_apigatewayv2_domain_name.api.domain_name_configuration[0].hosted_zone_id
+    evaluate_target_health = false
+  }
+}
 
 output "target_name" {
   value = aws_apigatewayv2_domain_name.api.domain_name_configuration[0].target_domain_name
