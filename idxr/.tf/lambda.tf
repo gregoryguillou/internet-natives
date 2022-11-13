@@ -10,7 +10,7 @@ data "aws_iam_policy_document" "lambda_assume_role" {
 }
 
 resource "aws_iam_role" "iam_for_lambda" {
-  name               = "inc${terraform.workspace}api"
+  name               = "inc${terraform.workspace}idxr"
   assume_role_policy = data.aws_iam_policy_document.lambda_assume_role.json
 }
 
@@ -22,7 +22,7 @@ resource "aws_iam_role_policy_attachment" "iam_for_lambda" {
 resource "aws_lambda_function" "lambda" {
   s3_bucket     = var.bucket
   s3_key        = "lambda/idxr/${data.external.version.result["version"]}.zip"
-  function_name = "inc${terraform.workspace}api"
+  function_name = "inc${terraform.workspace}idxr"
   role          = aws_iam_role.iam_for_lambda.arn
   runtime       = "go1.x"
   memory_size   = 512
