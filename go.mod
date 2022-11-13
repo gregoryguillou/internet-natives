@@ -1,4 +1,4 @@
-module github.com/blaqkube/internet-natives/idxr
+module github.com/blaqkube/internet-natives
 
 go 1.19
 

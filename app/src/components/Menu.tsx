@@ -1,4 +1,5 @@
-import { Web3Modal, Web3Button, useAccount } from "@web3modal/react";
+import { Web3Modal, useAccount, useConnectModal } from "@web3modal/react";
+
 import { providers } from "@web3modal/ethereum";
 
 import type { ConfigOptions } from "@web3modal/core";
@@ -26,16 +27,32 @@ const config: ConfigOptions = {
   },
 };
 
-const Modal = () => {
+const MenuAppBar = () => {
   const { account } = useAccount();
+  const { isOpen, open, close } = useConnectModal();
+
   return (
     <>
       <Web3Modal config={config} />
-      <Web3Button />
-      {account.address.slice(0, 6)}..{account.address.slice(-4)}
+
+      {account.address && (
+        <>
+          {account.address.slice(0, 6)}..{account.address.slice(-4)}
+        </>
+      )}
+      <input
+        type="button"
+        onClick={() => {
+          if (isOpen) {
+            return close();
+          }
+          open();
+        }}
+        value="click"
+      />
       <Safe owner={account.address} />
     </>
   );
 };
 
-export default Modal;
+export default MenuAppBar;
