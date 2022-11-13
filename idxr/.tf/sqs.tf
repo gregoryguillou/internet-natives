@@ -10,10 +10,6 @@ resource "aws_sqs_queue" "sqs_queue_trigger" {
   message_retention_seconds = 86400
   receive_wait_time_seconds = 3
   redrive_policy            = "{\"deadLetterTargetArn\":\"${aws_sqs_queue.sqs_queue_deadletter.arn}\",\"maxReceiveCount\":4}"
-
-  tags {
-    Environment = "production"
-  }
 }
 
 resource "aws_sqs_queue" "sqs_queue_deadletter" {
@@ -21,10 +17,6 @@ resource "aws_sqs_queue" "sqs_queue_deadletter" {
   max_message_size          = 2048
   message_retention_seconds = 86400
   receive_wait_time_seconds = 10
-
-  tags {
-    Environment = "production"
-  }
 }
 
 
@@ -50,7 +42,7 @@ resource "aws_iam_policy" "sqs_policy" {
   policy      = data.aws_iam_policy_document.authorization.json
 }
 
-resource "aws_iam_role_policy_attachment" "dynamodb_for_lambda" {
-  policy_arn = aws_iam_policy.dynamodb_policy.arn
+resource "aws_iam_role_policy_attachment" "sqs_for_lambda" {
+  policy_arn = aws_iam_policy.sqs_policy.arn
   role       = aws_iam_role.iam_for_lambda.name
 }
