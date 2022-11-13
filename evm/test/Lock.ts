@@ -24,29 +24,25 @@ describe("Lock", function () {
   }
 
   describe("Deployment", function () {
-    it("Should set the right unlockTime", async function () {
+    it("should set the right unlockTime", async function () {
       const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
 
       expect(await lock.unlockTime()).to.equal(unlockTime);
     });
 
-    it("Should set the right owner", async function () {
+    it("should set the right owner", async function () {
       const { lock, owner } = await loadFixture(deployOneYearLockFixture);
 
       expect(await lock.owner()).to.equal(owner.address);
     });
 
-    it("Should receive and store the funds to lock", async function () {
-      const { lock, lockedAmount } = await loadFixture(
-        deployOneYearLockFixture
-      );
+    it("should receive and store the funds to lock", async function () {
+      const { lock, lockedAmount } = await loadFixture(deployOneYearLockFixture);
 
-      expect(await ethers.provider.getBalance(lock.address)).to.equal(
-        lockedAmount
-      );
+      expect(await ethers.provider.getBalance(lock.address)).to.equal(lockedAmount);
     });
 
-    it("Should fail if the unlockTime is not in the future", async function () {
+    it("should fail if the unlockTime is not in the future", async function () {
       // We don't use the fixture here because we want a different deployment
       const latestTime = await time.latest();
       const Lock = await ethers.getContractFactory("Lock");
@@ -58,18 +54,14 @@ describe("Lock", function () {
 
   describe("Withdrawals", function () {
     describe("Validations", function () {
-      it("Should revert with the right error if called too soon", async function () {
+      it("should revert with the right error if called too soon", async function () {
         const { lock } = await loadFixture(deployOneYearLockFixture);
 
-        await expect(lock.withdraw()).to.be.revertedWith(
-          "You can't withdraw yet"
-        );
+        await expect(lock.withdraw()).to.be.revertedWith("You can't withdraw yet");
       });
 
-      it("Should revert with the right error if called from another account", async function () {
-        const { lock, unlockTime, otherAccount } = await loadFixture(
-          deployOneYearLockFixture
-        );
+      it("should revert with the right error if called from another account", async function () {
+        const { lock, unlockTime, otherAccount } = await loadFixture(deployOneYearLockFixture);
 
         // We can increase the time in Hardhat Network
         await time.increaseTo(unlockTime);
@@ -80,10 +72,8 @@ describe("Lock", function () {
         );
       });
 
-      it("Shouldn't fail if the unlockTime has arrived and the owner calls it", async function () {
-        const { lock, unlockTime } = await loadFixture(
-          deployOneYearLockFixture
-        );
+      it("shouldn't fail if the unlockTime has arrived and the owner calls it", async function () {
+        const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
 
         // Transactions are sent using the first signer by default
         await time.increaseTo(unlockTime);
@@ -93,21 +83,17 @@ describe("Lock", function () {
     });
 
     describe("Events", function () {
-      it("Should emit an event on withdrawals", async function () {
-        const { lock, unlockTime, lockedAmount } = await loadFixture(
-          deployOneYearLockFixture
-        );
+      it("should emit an event on withdrawals", async function () {
+        const { lock, unlockTime, lockedAmount } = await loadFixture(deployOneYearLockFixture);
 
         await time.increaseTo(unlockTime);
 
-        await expect(lock.withdraw())
-          .to.emit(lock, "Withdrawal")
-          .withArgs(lockedAmount, anyValue); // We accept any value as `when` arg
+        await expect(lock.withdraw()).to.emit(lock, "Withdrawal").withArgs(lockedAmount, anyValue); // We accept any value as `when` arg
       });
     });
 
     describe("Transfers", function () {
-      it("Should transfer the funds to the owner", async function () {
+      it("should transfer the funds to the owner", async function () {
         const { lock, unlockTime, lockedAmount, owner } = await loadFixture(
           deployOneYearLockFixture
         );
